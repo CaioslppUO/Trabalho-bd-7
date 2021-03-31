@@ -1,0 +1,59 @@
+σ -> Select; Exemplo: "σ quantia > 1000(Emprestimos)" <-> "SELECT * FROM Emprestimos WHERE quantia > 1000;"
+x -> Produto Cartesiano;  Exemplo: "Tomador x Emprestimo" <-> "SELECT * FROM Tomador, Emprestimo;"
+π -> Project; Exemplo: "π nomeCliente(Cliente)" <-> "SELECT nomeCliente FROM Clinete;"
+- -> Diferença; Exemplo: "π nomeCliente(Depositante) - π nomeCliente(Tomador") <-> "SELECT nomeCliente FROM Tomador MINUS SELECT nomeCliente FROM Depositante;"
+U -> Union; Exemplo: "π nomeCliente(Tomador) U π nomeCliente(depositante)"; <-> "SELECT nomeCliente FROM Tomador UNION SELECT nomeCliente FROM Depositantes;"
+
+---------------------------------------------------------------------------
+1)
+A)
+    π nomePro(produto)
+
+    SELECT nomePro FROM produto;
+
+B)
+    π nomePro,codPro (σ precoVenda > 100 (produto))
+
+    SELECT nomePro,codPro FROM produto WHERE precoVenda > 100;
+
+C)
+    π codPro (ItemCompra) ⋂ π codPro (ItemVenda)
+
+    SELECT codPro FROM ItemCompra INTERSECT SELECT codPro FROM ItemVenda;
+
+D)
+    π codPro (produto) - π codPro(ItemVenda)
+
+    SELECT codPro FROM produto MINUS SELECT codPro FROM ItemVenda;
+
+E)
+    π codPro (produto) - ( π codPro (ItemCompra) ⋂ π codPro (ItemVenda) )
+
+    SELECT codPro FROM produto MINUS (SELECT codPro FROM produto MINUS SELECT codPro FROM ItemVenda);
+
+F)
+    π nome (Cliente)
+
+    SELECT nome FROM Cliente;
+
+___________________________________________________________________________
+σ -> Select; Exemplo: "σ quantia > 1000(Emprestimos)" <-> "SELECT * FROM Emprestimos WHERE quantia > 1000;"
+x -> Produto Cartesiano;  Exemplo: "Tomador x Emprestimo" <-> "SELECT * FROM Tomador, Emprestimo;"
+π -> Project; Exemplo: "π nomeCliente(Cliente)" <-> "SELECT nomeCliente FROM Clinete;"
+- -> Diferença; Exemplo: "π nomeCliente(Depositante) - π nomeCliente(Tomador") <-> "SELECT nomeCliente FROM Tomador MINUS SELECT nomeCliente FROM Depositante;"
+U -> Union; Exemplo: "π nomeCliente(Tomador) U π nomeCliente(depositante)"; <-> "SELECT nomeCliente FROM Tomador UNION SELECT nomeCliente FROM Depositantes;"
+--------------------------------------------------------------------------------
+
+2)
+A)
+    π nomePro (σ produto.codPro = ItemVenda.codPro ( produto x ItemVenda ))
+
+    SELECT nomePro FROM produto, ItemVenda WHERE produto.codPro = ItemVenda.codPro;
+
+B)
+    π nome ( σ NotaVenda.codCliente = Cliente.codCliente ^ dataVenda = 2021 (NotaVenda x Cliente))
+
+    SELECT nome FROM NotaVenca,Cliente WHERE NotaVenda.codCliente = Cliente.codCliente AND YEAR(NotaVenda.dataVenda) = 2021;
+
+C)
+    π nomesPro ( π codPro,nomePro (produto) - π codPro,nomePro (produto x ItemVenda) )
