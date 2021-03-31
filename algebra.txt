@@ -56,4 +56,18 @@ B)
     SELECT nome FROM NotaVenca,Cliente WHERE NotaVenda.codCliente = Cliente.codCliente AND YEAR(NotaVenda.dataVenda) = 2021;
 
 C)
-    π nomesPro ( π codPro,nomePro (produto) - π codPro,nomePro (produto x ItemVenda) )
+    π nomesPro ( π codPro,nomePro (produto) - π codPro,nomePro (σ produto.codPro = ItemVenda.codPro (produto x ItemVenda)));
+
+    SELECT nomePro FROM ( SELECT codPro,nomePro FROM produto) MINUS (SELECT codPro,nomePro FROM produto, ItemVenda WHERE produto.codPro = Itemvenda.codPro)
+
+D)
+    π nomesPro (π codPro, nomePro (σ produto.codPro = ItemCompra.codPro (produto x ItemCompra)) - (π codPro, nomePro (σ produto.codPro = ItemVenda.codPro (produto x ItemVenda))))
+
+    SELECT nomesPro FROM ( (SELECT codPro, nomePro FROM produto, ItemCompra WHERE produto.codPro = ItemCompra.codPro) MINUS (SELECT codPro, nomePro FROM (SELECT codPro, nomePro FROM produto, ItemVenda WHERE produto.codPro = ItemVenda.codPro)));
+
+E)
+   π codCliente (Cliente) - (π codCliente (σ dataVenda = 2021 (NotaVenda)))
+
+   SELECT codCliente FROM Cliente MINUS SELECT codCliente FROM NotaVenda WHERE YEAR(NotaVenda.dataVenda) = 2021;
+
+F)
