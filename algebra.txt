@@ -71,3 +71,36 @@ E)
    SELECT codCliente FROM Cliente MINUS SELECT codCliente FROM NotaVenda WHERE YEAR(NotaVenda.dataVenda) = 2021;
 
 F)
+    (produto x produto) - (σ a1 < a2) ((pa1(produto)))(produto) x (pa2(produto))(produto)
+
+    select produto.precoVenda, produto.nomePro from produto Except select produto.precoVenda, produto.nomePro from produto join produto v2 on produto.precoVenda < v2.precoVenda;
+
+ ______________________________________________________________________________
+
+3)
+A)   
+   π nome, nomeProfissao (Cliente _[x] Profissao)
+
+   SELECT Cliente.nome, Profissao.nomeProfissao FROM Cliente LEFT JOIN Profissao ON Profissao.idProfissao = Cliente.idProfissao;
+
+B)
+    π nomeCliente, nomeProfissao (σ Cliente.idProfissao = Profissao.idProfissao (Cliente [x]_ Profissao))
+
+    SELECT Cliente.nome,Profissao.nomeProfissao FROM Cliente RIGHT JOIN Profissao ON Cliente.idProfissao = Profissao.idProfissao where Cliente.nome is not null;
+
+C)
+    π nomePro ( (σ codPro = produto.codPro ( produto x (π codPro (σ nroVenda = ItemVenda.nroVenda ((π nroVenda (σ NotaVenda.dataVenda = "2021-03" (NotaVenda)))) x ItemVenda)))) v (σ codPro = produto.codPro ( produto x (π codPro (σ nroCompra = ItemCompra.nroCompra ((π nroCompra (σ NotaCompra.dataCompra = "2021-03" (NotaCompra)))) x ItemCompra)))))
+
+    SELECT produto.nomePro
+    FROM NotaVenda
+      INNER JOIN ItemVenda on ItemVenda.nroVenda = NotaVenda.nroVenda
+      INNER JOIN produto on produto.codPro = ItemVenda.codPro
+    WHERE YEAR(NotaVenda.dataVenda) = "2021"
+      AND MONTH(NotaVenda.dataVenda) = "03"
+    UNION
+    SELECT produto.nomePro
+    FROM NotaCompra
+      INNER JOIN ItemCompra on ItemCompra.nroCompra = NotaCompra.nroCompra
+      INNER JOIN produto on produto.codPro = ItemCompra.codPro
+    WHERE YEAR(NotaCompra.dataCompra) = "2021"
+      AND MONTH(NotaCompra.dataCompra) = "03";
