@@ -1,0 +1,110 @@
+σ -> Select; Exemplo: "σ quantia > 1000(Emprestimos)" <-> "SELECT * FROM Emprestimos WHERE quantia > 1000;"
+x -> Produto Cartesiano;  Exemplo: "Tomador x Emprestimo" <-> "SELECT * FROM Tomador, Emprestimo;"
+π -> Project; Exemplo: "π nomeCliente(Cliente)" <-> "SELECT nomeCliente FROM Clinete;"
+- -> Diferença; Exemplo: "π nomeCliente(Depositante) - π nomeCliente(Tomador") <-> "SELECT nomeCliente FROM Tomador Except SELECT nomeCliente FROM Depositante;"
+U -> Union; Exemplo: "π nomeCliente(Tomador) U π nomeCliente(depositante)"; <-> "SELECT nomeCliente FROM Tomador UNION SELECT nomeCliente FROM Depositantes;"
+
+---------------------------------------------------------------------------
+1)
+A)
+    π nomePro(produto)
+
+    SELECT nomePro FROM produto;
+
+B)
+    π nomePro,codPro (σ precoVenda > 100 (produto))
+
+    SELECT nomePro,codPro FROM produto WHERE precoVenda > 100;
+
+C)
+    π codPro (ItemCompra) ⋂ π codPro (ItemVenda)
+
+    SELECT codPro FROM ItemCompra INTERSECT SELECT codPro FROM ItemVenda;
+
+D)
+    π codPro (produto) - π codPro(ItemVenda)
+
+    SELECT codPro FROM produto Except SELECT codPro FROM ItemVenda;
+
+E)
+    π codPro (produto) - ( π codPro (ItemCompra) ⋂ π codPro (ItemVenda) )
+
+    SELECT codPro FROM produto Except (SELECT codPro FROM produto Except SELECT codPro FROM ItemVenda);
+
+F)
+    π nome (Cliente)
+
+    SELECT nome FROM Cliente;
+
+___________________________________________________________________________
+σ -> Select; Exemplo: "σ quantia > 1000(Emprestimos)" <-> "SELECT * FROM Emprestimos WHERE quantia > 1000;"
+x -> Produto Cartesiano;  Exemplo: "Tomador x Emprestimo" <-> "SELECT * FROM Tomador, Emprestimo;"
+π -> Project; Exemplo: "π nomeCliente(Cliente)" <-> "SELECT nomeCliente FROM Clinete;"
+- -> Diferença; Exemplo: "π nomeCliente(Depositante) - π nomeCliente(Tomador") <-> "SELECT nomeCliente FROM Tomador Except SELECT nomeCliente FROM Depositante;"
+U -> Union; Exemplo: "π nomeCliente(Tomador) U π nomeCliente(depositante)"; <-> "SELECT nomeCliente FROM Tomador UNION SELECT nomeCliente FROM Depositantes;"
+--------------------------------------------------------------------------------
+
+2)
+A)
+    π nomePro (σ produto.codPro = ItemVenda.codPro ( produto x ItemVenda ))
+
+    SELECT nomePro FROM produto, ItemVenda WHERE produto.codPro = ItemVenda.codPro;
+
+B)
+    π nome ( σ NotaVenda.codCliente = Cliente.codCliente ^ dataVenda = 2021 (NotaVenda x Cliente))
+
+    SELECT nome FROM NotaVenda,Cliente WHERE NotaVenda.codCliente = Cliente.codCliente AND YEAR(NotaVenda.dataVenda) = 2021;
+
+C)
+    π nomesPro ( π codPro,nomePro (produto) - π codPro,nomePro (σ produto.codPro = ItemVenda.codPro (produto x ItemVenda)));
+
+    SELECT nomePro FROM produto Except (SELECT produto.nomePro FROM produto,ItemVenda WHERE produto.codPro = ItemVenda.codPro);
+
+D)
+    π nomesPro (π codPro, nomePro (σ produto.codPro = ItemCompra.codPro (produto x ItemCompra)) - (π codPro, nomePro (σ produto.codPro = ItemVenda.codPro (produto x ItemVenda))))
+
+    SELECT nomePro FROM produto, ItemCompra WHERE produto.codPro = ItemCompra.codPro Except SELECT nomePro FROM produto, ItemVenda WHERE produto.codPro = ItemVenda.codPro; 
+
+E)
+    π codCliente (Cliente) - (π codCliente (σ dataVenda = 2021 (NotaVenda)))
+
+    SELECT codCliente FROM Cliente Except SELECT codCliente FROM NotaVenda WHERE YEAR(NotaVenda.dataVenda) = 2021;
+
+F)
+    (produto x produto) - (σ a1 < a2) ((pa1(produto)))(produto) x (pa2(produto))(produto)
+
+    select produto.precoVenda, produto.nomePro from produto Except select produto.precoVenda, produto.nomePro from produto join produto v2 on produto.precoVenda < v2.precoVenda;
+
+______________________________________________________________________________
+
+3)
+A)   
+    π nome, nomeProfissao (Cliente _[x] Profissao)
+
+    SELECT Cliente.nome, Profissao.nomeProfissao FROM Cliente LEFT JOIN Profissao ON Profissao.idProfissao = Cliente.idProfissao;
+
+B)
+    π nomeCliente, nomeProfissao (σ Cliente.idProfissao = Profissao.idProfissao (Cliente [x]_ Profissao))
+
+    SELECT Cliente.nome,Profissao.nomeProfissao FROM Cliente RIGHT JOIN Profissao ON Cliente.idProfissao = Profissao.idProfissao where Cliente.nome is not null;
+
+C)
+    π nomePro ( (σ codPro = produto.codPro ( produto x (π codPro (σ nroVenda = ItemVenda.nroVenda ((π nroVenda (σ NotaVenda.dataVenda = "2021-03" (NotaVenda)))) x ItemVenda)))) v (σ codPro = produto.codPro ( produto x (π codPro (σ nroCompra = ItemCompra.nroCompra ((π nroCompra (σ NotaCompra.dataCompra = "2021-03" (NotaCompra)))) x ItemCompra)))))
+
+    SELECT produto.nomePro
+    FROM NotaVenda
+      INNER JOIN ItemVenda on ItemVenda.nroVenda = NotaVenda.nroVenda
+      INNER JOIN produto on produto.codPro = ItemVenda.codPro
+    WHERE YEAR(NotaVenda.dataVenda) = "2021"
+      AND MONTH(NotaVenda.dataVenda) = "03"
+    UNION
+    SELECT produto.nomePro
+    FROM NotaCompra
+      INNER JOIN ItemCompra on ItemCompra.nroCompra = NotaCompra.nroCompra
+      INNER JOIN produto on produto.codPro = ItemCompra.codPro
+    WHERE YEAR(NotaCompra.dataCompra) = "2021"
+      AND MONTH(NotaCompra.dataCompra) = "03";
+
+___________________________________________________________________________
+Exercicio (NotaVenda x Cliente)
+SELECT * FROM NotaVenda JOIN Cliente;
