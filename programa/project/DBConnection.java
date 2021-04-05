@@ -12,7 +12,7 @@ public class DBConnection {
 	private Connection connection = null;
 	String ip = "172.17.0.2";
 	String port = "3306";
-	String dbName = "ficha_medica";
+	String dbName = "Vendas";
 	String user = "root";
 	String pass = "pass";
 	String url = "jdbc:mariadb://" + ip + ":" + port + "/" + dbName;
