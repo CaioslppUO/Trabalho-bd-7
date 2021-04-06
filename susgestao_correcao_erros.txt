@@ -1,0 +1,9 @@
+1)
+
+e) SELECT codPro FROM produto Except (SELECT codPro FROM ItemCompra Union SELECT codPro FROM ItemVenda);
+
+
+2
+
+a) SELECT DISTINCT nomePro FROM produto, ItemVenda  WHERE produto.codPro = ItemVenda.codPro;
+
